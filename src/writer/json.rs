@@ -23,7 +23,6 @@ use base64::Engine as _;
 use derive_more::Display;
 use inflector::Inflector as _;
 use mime::Mime;
-use once_cell::sync::Lazy;
 use serde::{Serialize, Serializer};
 
 use crate::{
@@ -450,7 +449,8 @@ impl Embedding {
     /// Creates [`Embedding`] from the provided [`event::Scenario::Log`].
     fn from_log(msg: impl AsRef<str>) -> Self {
         /// [`Mime`] of the [`event::Scenario::Log`] [`Embedding`].
-        static LOG_MIME: Lazy<Mime> = Lazy::new(|| {
+        static LOG_MIME: OnceLock<Mime> = OnceLock::new();
+        let log_mime = LOG_MIME.get_or_init(|| {
             "text/x.cucumber.log+plain"
                 .parse()
                 .unwrap_or_else(|_| unreachable!("valid MIME"))
@@ -458,7 +458,7 @@ impl Embedding {
 
         Self {
             data: Base64::encode(msg.as_ref()),
-            mime_type: LOG_MIME.clone(),
+            mime_type: log_mime,
             name: None,
         }
     }

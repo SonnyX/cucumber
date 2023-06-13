@@ -203,7 +203,7 @@ pub use self::{
 /// across [scenarios][0], because we want some friction there to avoid tests
 /// being dependent on each other. If your workflow needs a way to share state
 /// between [scenarios][0] (ex. database connection pool), we recommend using
-/// [`once_cell`][1] crate or organize it other way via [shared state][2].
+/// [`once_cell`][1] crate or organize it in another way via [shared state][2].
 ///
 /// [0]: https://cucumber.io/docs/gherkin/reference#descriptions
 /// [1]: https://docs.rs/once_cell

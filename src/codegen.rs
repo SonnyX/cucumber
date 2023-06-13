@@ -23,7 +23,7 @@ pub use cucumber_expressions::{
 };
 pub use futures::future::LocalBoxFuture;
 pub use inventory::{self, collect, submit};
-pub use once_cell::sync::Lazy;
+pub use lazy_regex::Lazy;
 pub use regex::Regex;
 
 /// [`World`] extension allowing to register steps in [`inventory`].

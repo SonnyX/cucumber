@@ -1,16 +1,21 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::OnceLock};
 
 use cucumber::{gherkin::Step, given, writer::summarize::Stats, World as _};
 use gherkin::tagexpr::TagOperation;
-use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 
-static SCENARIO_RUNS: Lazy<Mutex<HashMap<Step, usize>>> =
-    Lazy::new(|| Mutex::new(HashMap::new()));
+static SCENARIO_RUNS: OnceLock<Mutex<HashMap<Step, usize>>> = OnceLock::new();
+
+fn initialize_scenario_runs() -> Mutex<HashMap<Step, usize>> {
+    Mutex::new(HashMap::new())
+}
 
 #[given(expr = "fail {int} time(s)")]
 async fn fail(_: &mut World, num: usize, step: &Step) {
-    let mut guard = SCENARIO_RUNS.lock().await;
+    let mut guard = SCENARIO_RUNS
+        .get_or_init(initialize_scenario_runs)
+        .lock()
+        .await;
     let runs = guard.entry(step.clone()).or_default();
     *runs += 1;
     assert!(*runs > num);
@@ -56,7 +61,11 @@ async fn correctly() {
              `{retry_filter:?}` tags",
         );
 
-        SCENARIO_RUNS.lock().await.clear();
+        SCENARIO_RUNS
+            .get_or_init(initialize_scenario_runs)
+            .lock()
+            .await
+            .clear();
     }
 }
 

@@ -16,8 +16,7 @@ use std::{
 };
 
 use derive_more::{Display, Error};
-use lazy_regex::regex;
-use once_cell::sync::Lazy;
+use lazy_regex::{regex, Lazy};
 use regex::Regex;
 use sealed::sealed;
 

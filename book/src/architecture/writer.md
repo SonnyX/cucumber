@@ -9,13 +9,12 @@ Finally, let's implement a custom [`Writer`] which simply outputs [cucumber even
 # extern crate async_trait;
 # extern crate cucumber;
 # extern crate futures;
-# extern crate once_cell;
 # extern crate tokio;
 #
 # use std::{
 #     panic::{self, AssertUnwindSafe},
 #     path::PathBuf,
-#     sync::Arc,
+#     sync::{Arc, OnceLock},
 #     time::Duration,
 # };
 #
@@ -28,7 +27,6 @@ Finally, let's implement a custom [`Writer`] which simply outputs [cucumber even
 #     future::{self, FutureExt as _},
 #     stream::{self, LocalBoxStream, Stream, StreamExt as _, TryStreamExt as _},
 # };
-# use once_cell::sync::Lazy;
 # use tokio::time::sleep;
 #
 # #[derive(Clone, Copy, Debug, Default)]
@@ -137,9 +135,8 @@ Finally, let's implement a custom [`Writer`] which simply outputs [cucumber even
 #
 # impl CustomRunner {
 #     fn steps_fns() -> &'static step::Collection<AnimalWorld> {
-#         static STEPS: Lazy<step::Collection<AnimalWorld>> =
-#             Lazy::new(AnimalWorld::collection);
-#         &STEPS
+        static STEPS: OnceLock<step::Collection<AnimalWorld>> = OnceLock::new();
+        &STEPS.get_or_init(AnimalWorld::collection)
 #     }
 #
 #     async fn execute_step(

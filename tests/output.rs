@@ -3,8 +3,7 @@ use std::{borrow::Cow, cmp::Ordering, fmt::Debug};
 use async_trait::async_trait;
 use cucumber::{cli, event, given, parser, step, then, when, Event, Writer};
 use itertools::Itertools as _;
-use lazy_regex::regex;
-use once_cell::sync::Lazy;
+use lazy_regex::{regex, Lazy};
 use regex::Regex;
 
 #[derive(cucumber::World, Debug, Default)]
